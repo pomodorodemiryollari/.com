@@ -103,3 +103,110 @@
     </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demiryolu Pomodoro - Ekspres Hattı</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- 1. EKRAN: BİLET GİŞESİ (GİRİŞ) -->
+    <div id="entry-screen" class="ticket-booth-container">
+        <div class="booth-header">
+            <h2>T.C. DEMİRYOLLARI POMODORO HATTI</h2>
+            <p>Lütfen yolculuk bilgilerinizi girerek biletinizi alınız.</p>
+        </div>
+
+        <form id="ticket-form" onsubmit="event.preventDefault(); startJourney();">
+            <div class="form-group">
+                <label for="passenger-name">Yolcu Adı Soyadı:</label>
+                <input type="text" id="passenger-name" placeholder="Örn. Baran" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="departure">Kalkış İstasyonu:</label>
+                    <select id="departure" required>
+                        <option value="İstanbul" selected>İstanbul (Söğütlüçeşme)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="arrival">Varış İstasyonu:</label>
+                    <select id="arrival" required>
+                        <option value="İzmir">İzmir (Basmane)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="wagon-class">Vagon Tipi:</label>
+                    <select id="wagon-class">
+                        <option value="Yataklı">Yataklı Vagon (Derin Odaklanma)</option>
+                        <option value="Örtülü Kuşetli">Örtülü Kuşetli (Standart)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="seat-number">Koltuk No:</label>
+                    <input type="number" id="seat-number" min="1" max="60" value="42">
+                </div>
+            </div>
+
+            <button type="submit" class="issue-btn">🎫 Bileti Kes ve Yolculuğu Başlat</button>
+        </form>
+    </div>
+
+    <!-- 2. EKRAN: HARİTA VE SAYAÇ (YOLCULUK) -->
+    <div id="journey-screen" class="journey-container hidden">
+        
+        <!-- Tren Penceresi ve Durum Bilgisi -->
+        <div class="journey-header">
+            <h2 id="status-title">Yolculuk Başlıyor...</h2>
+            <p id="passenger-info-display">Yolcu: - | Koltuk: -</p>
+        </div>
+
+        <!-- 🗺️ DEMİRYOLU HARİTASI -->
+        <div class="map-container">
+            <div class="railway-line"></div>
+            
+            <!-- Tren İkonu (Hat üzerinde hareket edecek) -->
+            <div id="train-token" class="train-token" style="left: 0%;">🚂</div>
+
+            <!-- İstasyon Noktaları -->
+            <div class="station active" style="left: 0%;" data-name="İstanbul">
+                <span class="dot"></span><span class="station-name">İstanbul</span>
+            </div>
+            <div class="station" style="left: 25%;" data-name="Eskişehir">
+                <span class="dot"></span><span class="station-name">Eskişehir</span>
+            </div>
+            <div class="station" style="left: 50%;" data-name="Kütahya">
+                <span class="dot"></span><span class="station-name">Kütahya</span>
+            </div>
+            <div class="station" style="left: 75%;" data-name="Balıkesir">
+                <span class="dot"></span><span class="station-name">Balıkesir</span>
+            </div>
+            <div class="station" style="left: 100%;" data-name="İzmir">
+                <span class="dot"></span><span class="station-name">İzmir</span>
+            </div>
+        </div>
+
+        <!-- ⏱️ POMODORO SAYAÇ ALANI -->
+        <div class="timer-section">
+            <div id="timer-display" class="timer-clock">25:00</div>
+            <div class="timer-buttons">
+                <button id="main-action-btn" onclick="toggleTimer()">Makinisti Harekete Geçir</button>
+                <button id="abandon-btn" onclick="abandonJourney()">Yolculuğu İptal Et</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Kondüktör Düdük Sesi (Süre bittiğinde çalacak) -->
+    <audio id="train-whistle" src="https://actions.google.com/sounds/v1/transportation/train_whistle.ogg" preload="auto"></audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
