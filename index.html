@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demiryolu Pomodoro - Ekspres Hattı</title>
+    <title>Demiryolu Pomodoro - Haritalı Sefer</title>
     <style>
-        /* --- TEMEL AYARLAR VE NOSTALJİK TREN TEMASI --- */
         * {
             margin: 0;
             padding: 0;
@@ -14,9 +13,7 @@
         }
 
         body {
-            background-color: #2c3e50; /* Gece treni arka planı */
-            background-image: radial-gradient(rgba(0,0,0,0.4) 20%, transparent 20%);
-            background-size: 10px 10px;
+            background-color: #1a120b; /* Koyu ahşap/gizemli atmosfer */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -26,451 +23,271 @@
 
         /* --- 1. EKRAN: BİLET GİŞESİ --- */
         .booth-card {
-            background-color: #f4ebd0; /* Saman kağıdı rengi */
+            background-color: #f5eedc;
             padding: 40px;
             border-radius: 12px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
             width: 100%;
-            max-width: 550px;
-            border: 4px double #8b5a2b;
-        }
-
-        .booth-header {
+            max-width: 500px;
+            border: 4px double #65451f;
             text-align: center;
-            margin-bottom: 25px;
-            border-bottom: 2px dashed #8b5a2b;
-            padding-bottom: 15px;
-            color: #4a2e1b;
         }
 
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 15px;
-        }
-
-        .form-row .form-group {
-            flex: 1;
-        }
-
-        label {
-            display: block;
-            font-size: 0.9rem;
-            font-weight: bold;
-            color: #4a2e1b;
-            margin-bottom: 6px;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #8b5a2b;
-            background-color: #fffdf9;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            color: #333;
-        }
-
+        .booth-header h2 { color: #432c10; margin-bottom: 5px; letter-spacing: 1px; }
+        .booth-header p { font-style: italic; color: #765827; margin-bottom: 25px; font-size: 0.9rem; }
+        
+        .form-group { margin-bottom: 20px; text-align: left; }
+        label { display: block; font-size: 0.9rem; font-weight: bold; color: #432c10; margin-bottom: 6px; }
+        input, select { width: 100%; padding: 12px; border: 2px solid #765827; background-color: #fffdf9; border-radius: 6px; font-size: 1rem; }
+        
         .issue-btn {
-            width: 100%;
-            padding: 15px;
-            background-color: #1e4620; /* Demiryolu yeşili */
-            color: white;
-            border: none;
-            font-size: 1.1rem;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            width: 100%; padding: 16px; background-color: #433520; color: #f5eedc;
+            border: none; font-size: 1.1rem; font-weight: bold; border-radius: 6px;
+            cursor: pointer; transition: all 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
+        .issue-btn:hover { background-color: #765827; }
 
-        .issue-btn:hover { background-color: #2d6630; }
-
-        /* --- 2. EKRAN: ANA YOLCULUK PANELI --- */
-        .journey-card {
-            background-color: #f4ebd0;
-            border: 4px double #8b5a2b;
-            border-radius: 12px;
-            padding: 40px;
-            width: 100%;
-            max-width: 750px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-            color: #4a2e1b;
-        }
-
-        .journey-header {
-            text-align: center;
-            border-bottom: 2px dashed #8b5a2b;
-            padding-bottom: 15px;
-            margin-bottom: 30px;
-        }
-
-        /* --- 🗺️ GERÇEKÇİ HARİTA VE RAY SİSTEMİ --- */
-        .map-wrapper {
-            position: relative;
-            width: 100%;
-            height: 100px;
-            margin: 50px 0;
-            background: rgba(139, 90, 43, 0.1);
-            border-radius: 8px;
-            border: 1px solid rgba(139, 90, 43, 0.2);
-        }
-
-        /* Boydan boya uzanan ana demiryolu hattı */
-        .railway-track {
-            position: absolute;
-            top: 40px;
-            left: 5%;
-            width: 90%;
-            height: 8px;
-            background: #8b5a2b;
-            border-top: 2px dashed #fffdf9; /* Travers görünümü */
-            border-bottom: 2px dashed #fffdf9;
-            z-index: 1;
-        }
-
-        /* İstasyonların Konumlandırılması */
-        .station-node {
-            position: absolute;
-            top: 44px; /* Ray hattının tam merkezine hizalama */
-            transform: translate(-50%, -50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            z-index: 2;
-        }
-
-        .station-node .indicator-dot {
-            width: 20px;
-            height: 20px;
-            background-color: #fffdf9;
-            border: 4px solid #8b5a2b;
-            border-radius: 50%;
-            transition: all 0.4s ease;
-        }
-
-        /* Aktif veya geçilmiş istasyonlar yeşile döner */
-        .station-node.passed .indicator-dot {
-            background-color: #1e4620;
-            border-color: #1e4620;
-            box-shadow: 0 0 10px rgba(30, 70, 32, 0.6);
-        }
-
-        .station-title {
-            margin-top: 12px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            white-space: nowrap;
-            background-color: #f4ebd0;
-            padding: 2px 6px;
-            border: 1px solid rgba(139, 90, 43, 0.3);
+        /* --- 2. EKRAN: HARİTA MASASI (ANA PANEL) --- */
+        .map-table-container {
+            background-color: #eed6b2; /* Eskitme harita kağıdı rengi */
+            border: 8px double #432c10;
             border-radius: 4px;
+            padding: 25px;
+            width: 100%;
+            max-width: 850px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8), inset 0 0 40px rgba(67,44,16,0.2);
+            color: #432c10;
         }
 
-        /* Harita üzerinde kayan tren vagonu */
-        .train-wagon {
-            position: absolute;
-            top: 5px;
-            font-size: 2.2rem;
-            transform: translateX(-50%);
-            transition: left 1.2s cubic-bezier(0.25, 1, 0.5, 1);
-            z-index: 3;
-        }
-
-        .train-shaking {
-            animation: chuggaChugga 0.3s infinite alternate;
-        }
-
-        @keyframes chuggaChugga {
-            0% { transform: translateX(-50%) translateY(0); }
-            100% { transform: translateX(-50%) translateY(-5px); }
-        }
-
-        /* --- ⏱️ POMODORO SAYAÇ TASARIMI --- */
-        .timer-box {
+        .table-header {
             text-align: center;
-            margin-top: 20px;
-            border-top: 2px dashed #8b5a2b;
-            padding-top: 25px;
-        }
-
-        .clock-display {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 5rem;
-            font-weight: bold;
-            color: #1e4620;
-            letter-spacing: 2px;
+            border-bottom: 2px dashed #65451f;
+            padding-bottom: 15px;
             margin-bottom: 20px;
         }
 
-        .control-btns button {
-            padding: 14px 28px;
+        /* 🗺️ COĞRAFİ HARİTA ALANI */
+        .geo-map {
+            position: relative;
+            width: 100%;
+            height: 380px; /* Geniş coğrafi alan */
+            background-color: #e5cb9e;
+            border: 2px solid #65451f;
+            border-radius: 8px;
+            overflow: hidden;
+            /* Hafif topoğrafik harita dokusu efekti */
+            background-image: radial-gradient(rgba(67,44,16,0.05) 15%, transparent 15%),
+                              linear-gradient(45deg, rgba(67,44,16,0.02) 25%, transparent 25%);
+            background-size: 20px 20px;
+        }
+
+        /* Kıvrımlı Demiryolu Ağı (Şehirleri bağlayan dekoratif çizgiler) */
+        .map-vector {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        /* Harita Üzerindeki Şehir İstasyonları (Gerçek harita koordinatları gibi serpiştirildi) */
+        .geo-station {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+        }
+
+        .station-pin {
+            width: 24px;
+            height: 24px;
+            background-color: #fffdf9;
+            border: 4px solid #65451f;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        /* Ziyaret edilen şehir parlasın */
+        .geo-station.visited .station-pin {
+            background-color: #2d5a27;
+            border-color: #1e3f1a;
+            color: white;
+            box-shadow: 0 0 15px #2d5a27;
+        }
+
+        .geo-label {
+            margin-top: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            background-color: #432c10;
+            color: #f5eedc;
+            padding: 2px 8px;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            letter-spacing: 0.5px;
+        }
+
+        /* 🚂 HARİTADA SERBESTÇE SEYAHAT EDEN LOKOMOTİF */
+        .map-locomotive {
+            position: absolute;
+            font-size: 2.5rem;
+            transform: translate(-50%, -70%);
+            transition: all 2s cubic-bezier(0.4, 0, 0.2, 1); /* Şehirler arası pürüzsüz süzülme */
+            z-index: 10;
+            filter: drop-shadow(0 8px 6px rgba(0,0,0,0.3));
+        }
+
+        .locomotive-chugging {
+            animation: chugAnimation 0.3s infinite alternate ease-in-out;
+        }
+
+        @keyframes chugAnimation {
+            from { transform: translate(-50%, -70%) translateY(0) scaleX(1); }
+            to { transform: translate(-50%, -70%) translateY(-5px) scaleX(1.03); }
+        }
+
+        /* ⏱️ KUMANDA MASASI VE SAYAÇ */
+        .dashboard {
+            margin-top: 25px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            border-top: 3px double #65451f;
+            padding-top: 20px;
+            align-items: center;
+        }
+
+        .panel-clock {
+            text-align: center;
+        }
+
+        .time-text {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 4.5rem;
+            font-weight: bold;
+            color: #2b1f1d;
+            background: rgba(0,0,0,0.05);
+            padding: 5px 15px;
+            border-radius: 8px;
+            display: inline-block;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .panel-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .control-btn {
+            padding: 14px;
             font-size: 1rem;
             font-weight: bold;
+            border: none;
             border-radius: 6px;
             cursor: pointer;
-            border: none;
-            margin: 0 8px;
-            transition: transform 0.1s, background 0.2s;
+            transition: all 0.2s;
+            color: white;
         }
 
-        .control-btns button:active { transform: scale(0.95); }
+        #btn-trigger { background-color: #2d5a27; }
+        #btn-trigger:hover { background-color: #3c7a35; }
+        #btn-abort { background-color: #8c2525; }
+        #btn-abort:hover { background-color: #b33636; }
 
-        #btn-action { background-color: #1e4620; color: white; }
-        #btn-cancel { background-color: #c0392b; color: white; }
-
-        /* --- GÖRÜNÜRLÜK KONTROLÜ (HATA ÖNLEYİCİ) --- */
-        .hidden {
-            display: none !important;
-        }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <!-- ================= 1. EKRAN: BİLET GİŞESİ ================= -->
-    <div id="screen-booth" class="booth-card">
+    <div id="view-booth" class="booth-card">
         <div class="booth-header">
-            <h2>T.C. DEMİRYOLLARI</h2>
-            <p>İstanbul - İzmir Hattı Pomodoro Ekspresi</p>
+            <h2>HİCAZ-EKSPRES GİŞESİ</h2>
+            <p>Harita Üzerinde Odaklanma Yolculuğu</p>
         </div>
 
         <form onsubmit="event.preventDefault(); buyTicketAndLaunch();">
             <div class="form-group">
-                <label>Makinist / Yolcu Adı:</label>
-                <input type="text" id="input-name" placeholder="Adınızı giriniz" required>
+                <label>Makinist Adı Soyadı:</label>
+                <input type="text" id="pass-name" placeholder="Adınızı yazın..." required>
             </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Kalkış:</label>
-                    <input type="text" value="İstanbul (Söğütlüçeşme)" disabled>
-                </div>
-                <div class="form-group">
-                    <label>Varış:</label>
-                    <input type="text" value="İzmir (Basmane)" disabled>
-                </div>
+            <div class="form-group">
+                <label>Rota Seçimi:</label>
+                <select disabled>
+                    <option>İstanbul → Eskişehir → Kütahya → Balıkesir → İzmir</option>
+                </select>
             </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Vagon Seçimi:</label>
-                    <select id="input-wagon">
-                        <option value="Yataklı Vagon">Yataklı Vagon (Derin Odaklanma)</option>
-                        <option value="Restoran Vagonu">Restoran Vagonu (Hafif Çalışma)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Koltuk / Kompartıman No:</label>
-                    <input type="number" id="input-seat" value="42" min="1" max="99">
-                </div>
-            </div>
-
-            <button type="submit" class="issue-btn">🎫 Bilet Kes ve Treni Perona Çağır</button>
+            <button type="submit" class="issue-btn">🎫 Bileti Onayla ve Haritayı Aç</button>
         </form>
     </div>
 
-    <!-- ================= 2. EKRAN: ANA HARİTA VE SAYAÇ EKRANI ================= -->
-    <div id="screen-journey" class="journey-card hidden">
-        <div class="journey-header">
-            <h2 id="txt-status">Tren Peronda Makinistini Bekliyor...</h2>
-            <p id="txt-passenger-meta">Yolcu Bilgisi yücelleniyor...</p>
+    <div id="view-map-table" class="map-table-container hidden">
+        <div class="table-header">
+            <h2 id="lbl-status">Tren İstanbul Garı'nda Bekliyor</h2>
+            <p id="lbl-meta">Makinist: -</p>
         </div>
 
-        <!-- 🗺️ HARİTA ALANI -->
-        <div class="map-wrapper">
-            <!-- Ray Hattı -->
-            <div class="railway-track"></div>
-            
-            <!-- Hareket Eden Trenimiz -->
-            <div id="train" class="train-wagon" style="left: 5%;">🚂</div>
+        <div class="geo-map">
+            <svg class="map-vector">
+                <path d="M 180,60 L 450,130 L 400,240 L 220,230 L 140,320" 
+                      fill="none" stroke="#65451f" stroke-width="4" stroke-dasharray="8,6" />
+            </svg>
 
-            <!-- İstasyon Düğümleri (Left değerleri ray hattıyla birebir senkronize edildi) -->
-            <div class="station-node passed" style="left: 5%;">
-                <div class="indicator-dot"></div>
-                <div class="station-title">İstanbul</div>
+            <div id="locomotive" class="map-locomotive" style="left: 180px; top: 60px;">🚂</div>
+
+            <div class="geo-station visited" style="left: 180px; top: 60px;" id="st-0">
+                <div class="station-pin">İST</div>
+                <div class="geo-label">İstanbul</div>
             </div>
-            <div class="station-node" style="left: 27.5%;">
-                <div class="indicator-dot"></div>
-                <div class="station-title">Eskişehir</div>
+
+            <div class="geo-station" style="left: 450px; top: 130px;" id="st-1">
+                <div class="station-pin">ESK</div>
+                <div class="geo-label">Eskişehir</div>
             </div>
-            <div class="station-node" style="left: 50%;">
-                <div class="indicator-dot"></div>
-                <div class="station-title">Kütahya</div>
+
+            <div class="geo-station" style="left: 400px; top: 240px;" id="st-2">
+                <div class="station-pin">KÜT</div>
+                <div class="geo-label">Kütahya</div>
             </div>
-            <div class="station-node" style="left: 72.5%;">
-                <div class="indicator-dot"></div>
-                <div class="station-title">Balıkesir</div>
+
+            <div class="geo-station" style="left: 220px; top: 230px;" id="st-3">
+                <div class="station-pin">BAL</div>
+                <div class="geo-label">Balıkesir</div>
             </div>
-            <div class="station-node" style="left: 95%;">
-                <div class="indicator-dot"></div>
-                <div class="station-title">İzmir</div>
+
+            <div class="geo-station" style="left: 140px; top: 320px;" id="st-4">
+                <div class="station-pin">İZM</div>
+                <div class="geo-label">İzmir</div>
             </div>
         </div>
 
-        <!-- ⏱️ SAYAÇ ALANI -->
-        <div class="timer-box">
-            <div id="html-clock" class="clock-display">25:00</div>
-            <div class="control-btns">
-                <button id="btn-action" onclick="handleTrainControl()">Treni Harekete Geçir</button>
-                <button id="btn-cancel" onclick="abortTrip()">Seferi İptal Et</button>
+        <div class="dashboard">
+            <div class="panel-clock">
+                <div id="clock-txt" class="time-text">25:00</div>
+            </div>
+            <div class="panel-controls">
+                <button id="btn-trigger" class="control-btn" onclick="toggleEngine()">Kazanları Ateşle (Başlat)</button>
+                <button id="btn-abort" class="control-btn" onclick="abortTrip()">Seferi İptal Et</button>
             </div>
         </div>
     </div>
 
-    <!-- Sinyal/Düdük Sesi -->
-    <audio id="audio-whistle" src="https://actions.google.com/sounds/v1/transportation/train_whistle.ogg" preload="auto"></audio>
+    <audio id="sound-whistle" src="https://actions.google.com/sounds/v1/transportation/train_whistle.ogg" preload="auto"></audio>
 
-    <!-- ================= Lojistik ve Mantık Motoru ================= -->
     <script>
-        let durationLeft = 25 * 60; // Ana çalışma süresi (25 dk)
-        let countdownLoop = null;
-        let breakActive = false;
-        let stationIndex = 0; // 0=İst, 1=Esk, 2=Küt, 3=Bal, 4=İzm
+        let timeLeft = 25 * 60; 
+        let engineLoop = null;
+        let breakMode = false;
+        let activeCityIndex = 0; 
 
-        // Trenin istasyonlardaki tam duruş koordinatları (%)
-        const routeCoordinates = [5, 27.5, 50, 72.5, 95];
-        const namesOfStations = ["İstanbul", "Eskişehir", "Kütahya", "Balıkesir", "İzmir"];
-
-        // Element Referansları
-        const uiBooth = document.getElementById('screen-booth');
-        const uiJourney = document.getElementById('screen-journey');
-        const txtStatus = document.getElementById('txt-status');
-        const txtMeta = document.getElementById('txt-passenger-meta');
-        const htmlClock = document.getElementById('html-clock');
-        const btnAction = document.getElementById('btn-action');
-        const trainElement = document.getElementById('train');
-        const whistleElement = document.getElementById('audio-whistle');
-
-        // Giriş Yapma ve Ekran Değiştirme Fonksiyonu
-        function buyTicketAndLaunch() {
-            const pName = document.getElementById('input-name').value;
-            const pWagon = document.getElementById('input-wagon').value;
-            const pSeat = document.getElementById('input-seat').value;
-
-            // Bilet Bilgilerini Yukardaki Alana Yaz
-            txtMeta.textContent = `Makinist: ${pName.toUpperCase()} | Klas: ${pWagon} | Kompartıman: No ${pSeat}`;
-            txtStatus.textContent = "Sefer Hazır! Lokomotifi çalıştırmak için aşağıdaki butona basın.";
-
-            // Hata Payı Olmadan Bir Ekranı Kapatıp Diğerini Aç
-            uiBooth.classList.add('hidden');
-            uiJourney.classList.remove('hidden');
-
-            setupFreshJourney();
-        }
-
-        // Tren Çalıştırma / Duraklatma Mantığı
-        function handleTrainControl() {
-            if (countdownLoop === null) {
-                // TRENİ KALDIR
-                countdownLoop = setInterval(() => {
-                    durationLeft--;
-                    refreshClockUI();
-
-                    if (durationLeft === 0) {
-                        clearInterval(countdownLoop);
-                        countdownLoop = null;
-                        try { whistleElement.play(); } catch(err){}
-                        processStationArrival();
-                    }
-                }, 1000);
-
-                btnAction.textContent = "Fren Yap (Duraklat)";
-                btnAction.style.backgroundColor = "#d35400";
-                trainElement.classList.add('train-shaking');
-                
-                if (!breakActive) {
-                    txtStatus.textContent = "Makinist Gaz Açtı, Tren İlerliyor... Odaklanmayı Bozmayın! 🚂";
-                }
-            } else {
-                // TRENİ DURDUR
-                clearInterval(countdownLoop);
-                countdownLoop = null;
-                btnAction.textContent = "Treni Harekete Geçir";
-                btnAction.style.backgroundColor = "#1e4620";
-                trainElement.classList.remove('train-shaking');
-                txtStatus.textContent = "Tren Sinyal Bekliyor (Duraklatıldı) 🛑";
-            }
-        }
-
-        function refreshClockUI() {
-            const mins = Math.floor(durationLeft / 60);
-            const secs = durationLeft % 60;
-            htmlClock.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        }
-
-        // İstasyon Değişimi ve Yolculuk İlerlemesi
-        function processStationArrival() {
-            trainElement.classList.remove('train-shaking');
-
-            if (!breakActive) {
-                // Çalışma Segmenti Bitti -> Yeni İstasyona İlerle
-                stationIndex++;
-                redrawMapProgress();
-
-                if (stationIndex === 4) {
-                    txtStatus.textContent = "🎉 Muhteşem! İzmir Basmane Garı'na emniyetle ulaştık. Yolculuk tamamlandı!";
-                    htmlClock.textContent = "00:00";
-                    btnAction.classList.add('hidden');
-                    return;
-                }
-
-                breakActive = true;
-                durationLeft = 5 * 60; // Mola Süresi: 5 Dakika
-                txtStatus.textContent = `🚉 Trenimiz ${namesOfStations[stationIndex]} Garı'na girdi. 5 Dakika İhtiyaç Molası!`;
-                btnAction.textContent = "Molayı Başlat";
-            } else {
-                // Mola Bitti -> Tekrar Çalışma Moduna Dön
-                breakActive = false;
-                durationLeft = 25 * 60;
-                txtStatus.textContent = "Mola Süresi Doldu. Tren Kalkıyor, Odaklanma Zamanı!";
-                btnAction.textContent = "Treni Harekete Geçir";
-            }
-            
-            btnAction.style.backgroundColor = "#1e4620";
-            refreshClockUI();
-        }
-
-        // Harita Görsel Güncellemesi
-        function redrawMapProgress() {
-            // Treni yeni konuma kaydır
-            trainElement.style.left = `${routeCoordinates[stationIndex]}%`;
-
-            // Geçilen istasyonların ışıklarını yak
-            const allNodes = document.querySelectorAll('.station-node');
-            allNodes.forEach((node, idx) => {
-                if (idx <= stationIndex) {
-                    node.classList.add('passed');
-                } else {
-                    node.classList.remove('passed');
-                }
-            });
-        }
-
-        function abortTrip() {
-            if (confirm("Mevcut seferi iptal edip bilet gişesine dönmek istiyor musunuz?")) {
-                clearInterval(countdownLoop);
-                countdownLoop = null;
-                uiJourney.classList.add('hidden');
-                uiBooth.classList.remove('hidden');
-            }
-        }
-
-        function setupFreshJourney() {
-            durationLeft = 25 * 60;
-            breakActive = false;
-            stationIndex = 0;
-            redrawMapProgress();
-            refreshClockUI();
-            btnAction.classList.remove('hidden');
-            btnAction.textContent = "Treni Harekete Geçir";
-            btnAction.style.backgroundColor = "#1e4620";
-            trainElement.classList.remove('train-shaking');
-        }
-    </script>
-</body>
-</html>
+        // Şehirlerin Harita Üzerindeki Tam Pixel Koordinatları (X , Y)
+        const cityCoordinates =
