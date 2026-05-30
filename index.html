@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demiryolu Pomodoro - Bilet Gişesi</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="ticket-booth-container">
+        <div class="booth-header">
+            <h2>T.C. DEMİRYOLLARI POMODORO HATTI</h2>
+            <p>Lütfen yolculuk bilgilerinizi girerek biletinizi alınız.</p>
+        </div>
+
+        <form id="ticket-form" onsubmit="event.preventDefault(); createTicket();">
+            <div class="form-group">
+                <label for="passenger-name">Yolcu Adı Soyadı:</label>
+                <input type="text" id="passenger-name" placeholder="Örn. Ahmet Yılmaz" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="departure">Kalkış İstasyonu:</label>
+                    <select id="departure" required>
+                        <option value="İstanbul" selected>İstanbul (Söğütlüçeşme)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="arrival">Varış İstasyonu:</label>
+                    <select id="arrival" required>
+                        <option value="İzmir">İzmir (Basmane)</option>
+                        <option value="Ankara">Ankara (Gar)</option>
+                        <option value="Eskişehir">Eskişehir (Gar)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="wagon-class">Vagon Tipi:</label>
+                    <select id="wagon-class">
+                        <option value="Örtülü Kuşetli">Örtülü Kuşetli (Odaklanma Modu)</option>
+                        <option value="Pulman">Pulman (Hızlı Çalışma)</option>
+                        <option value="Yataklı">Yataklı (Derin Odaklanma)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="seat-number">Koltuk No:</label>
+                    <input type="number" id="seat-number" min="1" max="60" value="42">
+                </div>
+            </div>
+
+            <button type="submit" class="issue-btn">🎫 Bileti Kes ve Yolculuğu Başlat</button>
+        </form>
+
+        <div id="digital-ticket" class="ticket hidden">
+            <div class="ticket-stub">
+                <h3>POMODORO EXPRESS</h3>
+                <span class="stub-serial">№ 1923-42</span>
+            </div>
+            <div class="ticket-main">
+                <div class="ticket-route">
+                    <span id="t-dept">İSTANBUL</span>
+                    <span class="train-icon">🚂💨</span>
+                    <span id="t-arr">İZMİR</span>
+                </div>
+                <div class="ticket-info">
+                    <p><strong>YOLCU:</strong> <span id="t-name">-</span></p>
+                    <p><strong>VAGON/KOLTUK:</strong> <span id="t-seat">-</span></p>
+                    <p><strong>TARİFE:</strong> 25 Dk Çalışma / 5 Dk Mola</p>
+                </div>
+                <div class="ticket-footer">
+                    <span>İyi Yolculuklar ve Verimli Çalışmalar dileriz!</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Giriş ekranı test fonksiyonu (İleride script.js içine taşıyacağız)
+        function createTicket() {
+            const name = document.getElementById('passenger-name').value;
+            const dept = document.getElementById('departure').value;
+            const arr = document.getElementById('arrival').value;
+            const wagon = document.getElementById('wagon-class').value;
+            const seat = document.getElementById('seat-number').value;
+
+            // Bilet alanlarını doldur
+            document.getElementById('t-name').textContent = name.toUpperCase();
+            document.getElementById('t-dept').textContent = dept.toUpperCase();
+            document.getElementById('t-arr').textContent = arr.toUpperCase();
+            document.getElementById('t-seat').textContent = `${wagon} / No: ${seat}`;
+
+            // Bileti görünür yap
+            const ticket = document.getElementById('digital-ticket');
+            ticket.classList.remove('hidden');
+            ticket.classList.add('print-animation');
+
+            // 2 saniye sonra harita/sayaç ekranına geçiş yapılabilir (Bir sonraki adımda ekleyeceğiz)
+            /* setTimeout(() => { alert('Tren hareket ediyor! Sayaç ekranına yönlendiriliyorsunuz...'); }, 2500); */
+        }
+    </script>
+</body>
+</html>
