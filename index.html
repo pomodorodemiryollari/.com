@@ -3,117 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demiryolu Pomodoro - Bilet Gişesi</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="ticket-booth-container">
-        <div class="booth-header">
-            <h2>TÜRKİYE CUMHURİYETİ DEVLET DEMİRYOLLARI</h2>
-            <p>Lütfen biletinizi alınız.</p>
-        </div>
-
-        <form id="ticket-form" onsubmit="event.preventDefault(); createTicket();">
-            <div class="form-group">
-                <label for="passenger-name">Yolcu Adı Soyadı:</label>
-                <input type="text" id="passenger-name" placeholder="Örn. Ahmet Yılmaz" required>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="departure">Kalkış İstasyonu:</label>
-                    <select id="departure" required>
-                        <option value="İstanbul" selected>İstanbul (Söğütlüçeşme)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="arrival">Varış İstasyonu:</label>
-                    <select id="arrival" required>
-                        <option value="İzmir">İzmir (Basmane)</option>
-                        <option value="Ankara">Ankara (Gar)</option>
-                        <option value="Eskişehir">Eskişehir (Gar)</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="wagon-class">Vagon Tipi:</label>
-                    <select id="wagon-class">
-                        <option value="Örtülü Kuşetli">Örtülü Kuşetli (Odaklanma Modu)</option>
-                        <option value="Pulman">Pulman (Hızlı Çalışma)</option>
-                        <option value="Yataklı">Yataklı (Derin Odaklanma)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="seat-number">Koltuk No:</label>
-                    <input type="number" id="seat-number" min="1" max="60" value="42">
-                </div>
-            </div>
-
-            <button type="submit" class="issue-btn">🎫 Bileti Kes ve Yolculuğu Başlat</button>
-        </form>
-
-        <div id="digital-ticket" class="ticket hidden">
-            <div class="ticket-stub">
-                <h3>POMODORO EXPRESS</h3>
-                <span class="stub-serial">№ 1923-42</span>
-            </div>
-            <div class="ticket-main">
-                <div class="ticket-route">
-                    <span id="t-dept">İSTANBUL</span>
-                    <span class="train-icon">🚂💨</span>
-                    <span id="t-arr">İZMİR</span>
-                </div>
-                <div class="ticket-info">
-                    <p><strong>YOLCU:</strong> <span id="t-name">-</span></p>
-                    <p><strong>VAGON/KOLTUK:</strong> <span id="t-seat">-</span></p>
-                    <p><strong>TARİFE:</strong> 25 Dk Çalışma / 5 Dk Mola</p>
-                </div>
-                <div class="ticket-footer">
-                    <span>İyi Yolculuklar ve Verimli Çalışmalar dileriz!</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Giriş ekranı test fonksiyonu (İleride script.js içine taşıyacağız)
-        function createTicket() {
-            const name = document.getElementById('passenger-name').value;
-            const dept = document.getElementById('departure').value;
-            const arr = document.getElementById('arrival').value;
-            const wagon = document.getElementById('wagon-class').value;
-            const seat = document.getElementById('seat-number').value;
-
-            // Bilet alanlarını doldur
-            document.getElementById('t-name').textContent = name.toUpperCase();
-            document.getElementById('t-dept').textContent = dept.toUpperCase();
-            document.getElementById('t-arr').textContent = arr.toUpperCase();
-            document.getElementById('t-seat').textContent = `${wagon} / No: ${seat}`;
-
-            // Bileti görünür yap
-            const ticket = document.getElementById('digital-ticket');
-            ticket.classList.remove('hidden');
-            ticket.classList.add('print-animation');
-
-            // 2 saniye sonra harita/sayaç ekranına geçiş yapılabilir (Bir sonraki adımda ekleyeceğiz)
-            /* setTimeout(() => { alert('Tren hareket ediyor! Sayaç ekranına yönlendiriliyorsunuz...'); }, 2500); */
-        }
-    </script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Demiryolu Pomodoro - Ekspres Hattı</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /* --- GENEL TASARIM VE ATMOSFER --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Georgia', serif; /* Nostaljik tren havası */
+        }
+
+        body {
+            background-color: #2c3e50; /* Gece treni teması */
+            background-image: radial-gradient(rgba(0,0,0,0.3) 20%, transparent 20%),
+                              radial-gradient(rgba(0,0,0,0.3) 20%, transparent 20%);
+            background-size: 8px 8px;
+            background-position: 0 0, 4px 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* --- 1. EKRAN: BİLET GİŞESİ KUTUSU --- */
+        .ticket-booth-container {
+            background-color: #f4ebd0; /* Eski saman kağıdı rengi */
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 550px;
+            border: 4px double #8b5a2b;
+        }
+
+        .booth-header {
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 2px dashed #8b5a2b;
+            padding-bottom: 15px;
+            color: #4a2e1b;
+        }
+
+        .booth-header h2 {
+            font-size: 1.4rem;
+            letter-spacing: 1px;
+        }
+
+        .booth-header p {
+            font-size: 0.9rem;
+            font-style: italic;
+            margin-top: 5px;
+            color: #6e472f;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #4a2e1b;
+            margin-bottom: 5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #8b5a2b;
+            background-color: #fffdf9;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            color: #333;
+        }
+
+        .issue-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #1e4620; /* Koyu tren yeşili */
+            color: white;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .issue-btn:hover { background-color: #2d6630; }
+
+        /* --- 2. EKRAN: YOLCULUK (HARİTA VE SAYAÇ) KUTUSU --- */
+        .journey-container {
+            background-color: #f4ebd0;
+            border: 4px double #8b5a2b;
+            border-radius: 12px;
+            padding: 30px;
+            width: 100%;
+            max-width: 700px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            color: #4a2e1b;
+        }
+
+        .journey-header {
+            text-align: center;
+            border-bottom: 2px dashed #8b5a2b;
+            padding-bottom: 15px;
+            margin-bottom: 40px;
+        }
+
+        /* HARİTA TASARIMI */
+        .map-container {
+            position: relative;
+            height: 80px;
+            margin: 40px 20px;
+            background: rgba(139, 90, 43, 0.05);
+            border-radius: 8px;
+        }
+
+        .railway-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: #8b5a2b;
+            transform: translateY(-50%);
+            border-top: 2px dashed #fffdf9;
+            border-bottom: 2px dashed #fffdf9;
+        }
+
+        .station {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2;
+        }
+
+        .station .dot {
+            width: 16px;
+            height: 16px;
+            background-color: #fffdf9;
+            border: 3px solid #8b5a2b;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .station.active .dot {
+            background-color: #1e4620;
+            transform: scale(1.2);
+            box-shadow: 0 0 8px #1e4620;
+        }
+
+        .station-name {
+            margin-top: 8px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            white-space: nowrap;
+            background: #f4ebd0;
+            padding: 2px 4px;
+        }
+
+        /* TREN İKONU */
+        .train-token {
+            position: absolute;
+            top: 15%;
+            font-size: 2rem;
+            transform: translateX(-50%);
+            transition: left 1s ease-in-out;
+            z-index: 3;
+        }
+
+        .train-moving {
+            animation: trainChug 0.4s infinite alternate;
+        }
+
+        @keyframes trainChug {
+            0% { transform: translateX(-50%) translateY(0); }
+            100% { transform: translateX(-50%) translateY(-4px); }
+        }
+
+        /* SAYAÇ ALANI */
+        .timer-section {
+            text-align: center;
+            margin-top: 30px;
+            border-top: 2px dashed #8b5a2b;
+            padding-top: 20px;
+        }
+
+        .timer-clock {
+            font-family: monospace;
+            font-size: 4.5rem;
+            font-weight: bold;
+            color: #1e4620;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+
+        .timer-buttons button {
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            border: none;
+            margin: 0 5px;
+            transition: all 0.2s;
+        }
+
+        #main-action-btn { background-color: #1e4620; color: white; }
+        #abandon-btn { background-color: #c0392b; color: white; }
+
+        /* GİZLEME SINIFI */
+        .hidden {
+            display: none !important;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- 1. EKRAN: BİLET GİŞESİ (GİRİŞ) -->
     <div id="entry-screen" class="ticket-booth-container">
         <div class="booth-header">
             <h2>T.C. DEMİRYOLLARI POMODORO HATTI</h2>
@@ -143,70 +266,4 @@
 
             <div class="form-row">
                 <div class="form-group">
-                    <label for="wagon-class">Vagon Tipi:</label>
-                    <select id="wagon-class">
-                        <option value="Yataklı">Yataklı Vagon (Derin Odaklanma)</option>
-                        <option value="Örtülü Kuşetli">Örtülü Kuşetli (Standart)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="seat-number">Koltuk No:</label>
-                    <input type="number" id="seat-number" min="1" max="60" value="42">
-                </div>
-            </div>
-
-            <button type="submit" class="issue-btn">🎫 Bileti Kes ve Yolculuğu Başlat</button>
-        </form>
-    </div>
-
-    <!-- 2. EKRAN: HARİTA VE SAYAÇ (YOLCULUK) -->
-    <div id="journey-screen" class="journey-container hidden">
-        
-        <!-- Tren Penceresi ve Durum Bilgisi -->
-        <div class="journey-header">
-            <h2 id="status-title">Yolculuk Başlıyor...</h2>
-            <p id="passenger-info-display">Yolcu: - | Koltuk: -</p>
-        </div>
-
-        <!-- 🗺️ DEMİRYOLU HARİTASI -->
-        <div class="map-container">
-            <div class="railway-line"></div>
-            
-            <!-- Tren İkonu (Hat üzerinde hareket edecek) -->
-            <div id="train-token" class="train-token" style="left: 0%;">🚂</div>
-
-            <!-- İstasyon Noktaları -->
-            <div class="station active" style="left: 0%;" data-name="İstanbul">
-                <span class="dot"></span><span class="station-name">İstanbul</span>
-            </div>
-            <div class="station" style="left: 25%;" data-name="Eskişehir">
-                <span class="dot"></span><span class="station-name">Eskişehir</span>
-            </div>
-            <div class="station" style="left: 50%;" data-name="Kütahya">
-                <span class="dot"></span><span class="station-name">Kütahya</span>
-            </div>
-            <div class="station" style="left: 75%;" data-name="Balıkesir">
-                <span class="dot"></span><span class="station-name">Balıkesir</span>
-            </div>
-            <div class="station" style="left: 100%;" data-name="İzmir">
-                <span class="dot"></span><span class="station-name">İzmir</span>
-            </div>
-        </div>
-
-        <!-- ⏱️ POMODORO SAYAÇ ALANI -->
-        <div class="timer-section">
-            <div id="timer-display" class="timer-clock">25:00</div>
-            <div class="timer-buttons">
-                <button id="main-action-btn" onclick="toggleTimer()">Makinisti Harekete Geçir</button>
-                <button id="abandon-btn" onclick="abandonJourney()">Yolculuğu İptal Et</button>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Kondüktör Düdük Sesi (Süre bittiğinde çalacak) -->
-    <audio id="train-whistle" src="https://actions.google.com/sounds/v1/transportation/train_whistle.ogg" preload="auto"></audio>
-
-    <script src="script.js"></script>
-</body>
-</html>
+                    <label for="wagon-
